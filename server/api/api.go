@@ -1,6 +1,7 @@
 package api
 
 import (
+	"client_server/server/database"
 	"client_server/server/entities"
 	"encoding/json"
 	"fmt"
@@ -43,12 +44,14 @@ func getCotation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cotation entities.Cotation
+	var cotation entities.ServerCotation
 	err = cotation.UnmarshalCotation(body, &cotation)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	database.InsertCotation(&cotation)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
