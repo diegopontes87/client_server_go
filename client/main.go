@@ -2,33 +2,55 @@ package main
 
 import (
 	"client_server/client/entities"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
-	"os"
+	"time"
 )
 
 func main() {
 
-	req, err := http.Get("http://localhost:8080/cotation")
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
 
+	SetTimeOut(ctx)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/cotation", nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error during request: %v\n", err)
+		panic(err)
 	}
 
-	defer req.Body.Close()
-	res, err := io.ReadAll(req.Body)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading response%v\n", err)
+		log.Println("Error during request:", err)
+		panic(err)
 	}
 
-	var cotation entities.ClientCotation
-	err = json.Unmarshal(res, &cotation)
-
+	defer resp.Body.Close()
+	res, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error during parse%v\n", err)
+		log.Printf("Error reading response%v\n:", err)
 	}
 
-	fmt.Println(cotation)
+	var bid entities.ClientBid
+	err = json.Unmarshal(res, &bid)
+
+	if err != nil {
+		log.Printf("Error during parse%v\n:", err)
+	}
+
+	fmt.Println(bid)
+}
+
+func SetTimeOut(ctx context.Context) {
+	select {
+	case <-ctx.Done():
+		fmt.Println("Hotel book cancelled. Timeout reached.")
+		return
+	case <-time.After(300 * time.Millisecond):
+		fmt.Println("Hotel Booked!")
+	}
 }

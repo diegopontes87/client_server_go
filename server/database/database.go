@@ -16,7 +16,9 @@ var (
 
 func InitDB() {
 	var err error
+
 	dbInstance, err = gorm.Open(sqlite.Open("data/database.db"), &gorm.Config{})
+
 	if err != nil {
 		log.Fatal("Error trying to connect to the database:", err)
 	}
@@ -24,9 +26,14 @@ func InitDB() {
 }
 
 func createTables() {
-	err := dbInstance.AutoMigrate(&entities.DBCotation{})
-	if err != nil {
-		log.Fatal("Error while migration:", err)
+	resetingError := dbInstance.Unscoped().Delete(&entities.DBCotation{}).Error
+	if resetingError != nil {
+		log.Fatal("Error while resiting table:", resetingError)
+	}
+
+	creatingTableError := dbInstance.AutoMigrate(&entities.DBCotation{})
+	if creatingTableError != nil {
+		log.Fatal("Error while migration:", creatingTableError)
 	}
 }
 
