@@ -3,6 +3,7 @@ package api
 import (
 	"client_server/server/database"
 	"client_server/server/entities"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -17,12 +18,12 @@ func CreateServer() {
 }
 
 func getCotation(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 200*time.Millisecond)
+	defer cancel()
 
-	client := &http.Client{
-		Timeout: 200 * time.Millisecond,
-	}
+	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", "https://economia.awesomeapi.com.br/json/last/USD-BRL", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://economia.awesomeapi.com.br/json/last/USD-BRL", nil)
 	if err != nil {
 		fmt.Printf("Error creating request: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -51,7 +52,10 @@ func getCotation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	database.InsertCotation(&cotation)
+	dbCtx, dbCancel := context.WithTimeout(r.Context(), 10*time.Millisecond)
+	defer dbCancel()
+
+	database.InsertCotation(dbCtx, &cotation)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
