@@ -18,7 +18,7 @@ This project consists of a **client** and **server** application that interacts 
    cd server/data
 2. Run: 
    ```bash
-   go run main.go
+   sqlite3 database.db
 
 ## **Run the Client**
 1. Navigate to the `client` directory:
