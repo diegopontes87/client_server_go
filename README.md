@@ -14,8 +14,18 @@ This project consists of a **client** and **server** application that interacts 
 ## **Run the Database - SQLite**
 1. Navigate to the `data` directory:
 
-  ```bash
+   ```bash
    cd server/data
 2. Run: 
-  ```bash
+   ```bash
    go run main.go
+
+## **Run the Client**
+1. Navigate to the `client` directory:
+
+   ```bash
+   cd client
+2. Run:
+   ```bash
+   go run main.go
+
