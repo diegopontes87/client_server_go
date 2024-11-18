@@ -47,10 +47,10 @@ func main() {
 
 	if err != nil {
 		log.Printf("Error during parse: %v:", err)
+	} else {
+		fmt.Println(bid)
+		createFileAndSave(bid)
 	}
-
-	fmt.Println(bid)
-	createFileAndSave(bid)
 }
 
 func createFileAndSave(bid entities.ClientBid) {
