@@ -32,21 +32,21 @@ func main() {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Println("Error during request:", err)
+		log.Printf("Error during request: %v", err)
 		panic(err)
 	}
 
 	defer resp.Body.Close()
 	res, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Error reading response%v\n:", err)
+		log.Printf("Error reading response: %v:", err)
 	}
 
 	var bid entities.ClientBid
 	err = json.Unmarshal(res, &bid)
 
 	if err != nil {
-		log.Printf("Error during parse%v\n:", err)
+		log.Printf("Error during parse: %v:", err)
 	}
 
 	fmt.Println(bid)

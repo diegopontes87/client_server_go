@@ -1,5 +1,5 @@
 package entities
 
 type ServerBid struct {
-	Bid string
+	Bid string `json:"bid"`
 }
